@@ -22,10 +22,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Call the ProjectSeeder and TaskSeeder
+        // Call the ProjectSeeder
         $this->call([
             ProjectSeeder::class,
-            TaskSeeder::class,
         ]);
     }
 }

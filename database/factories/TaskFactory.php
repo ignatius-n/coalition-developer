@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +20,7 @@ class TaskFactory extends Factory
     {
         return [
             'uuid'          => fake()->uuid(),
-            'project_id'    => null, // This should be set when creating a task for a specific project
+            'project_id'    => Project::factory(),
             'order'         => fake()->numberBetween(1, 10),
             'name'          => fake()->sentence(3),
             'description'   => fake()->paragraph(),

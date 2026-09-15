@@ -25,6 +25,7 @@ class Project extends Model
     /** @use HasFactory<ProjectFactory> */
     use HasFactory, AddUUIDTrait;
 
+    /** @return HasMany<Task, $this> */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);

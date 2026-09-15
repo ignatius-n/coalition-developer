@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('name')->unique()->index();
             $table->string('description')->nullable();
             $table->timestamps();
+
+            $table->index(['project_id', 'order']);
         });
     }
 
