@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Project extends Model
 {
     /** @use HasFactory<ProjectFactory> */
-    use HasFactory, AddUUIDTrait;
+    use AddUUIDTrait, HasFactory;
 
     /** @return HasMany<Task, $this> */
     public function tasks(): HasMany

@@ -9,13 +9,13 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class);
 
 it('assigns priorities according to the supplied task order', function () {
-    $project            = Project::factory()->create();
-    $tasks              = Task::factory()
+    $project = Project::factory()->create();
+    $tasks = Task::factory()
         ->for($project)
         ->createMany([
-            ['order'    => 1],
-            ['order'    => 2],
-            ['order'    => 3],
+            ['order' => 1],
+            ['order' => 2],
+            ['order' => 3],
         ]);
 
     app(TaskService::class)->reorderTasks(
@@ -33,12 +33,12 @@ it('assigns priorities according to the supplied task order', function () {
 });
 
 it('rejects duplicate task ids', function () {
-    $project            = Project::factory()->create();
-    $tasks              = Task::factory()
+    $project = Project::factory()->create();
+    $tasks = Task::factory()
         ->for($project)
         ->createMany([
-            ['order'    => 1],
-            ['order'    => 2],
+            ['order' => 1],
+            ['order' => 2],
         ]);
 
     app(TaskService::class)->reorderTasks(
@@ -51,22 +51,22 @@ it('rejects duplicate task ids', function () {
 })->throws(InvalidArgumentException::class);
 
 it('does not allow tasks from another project to be reordered', function () {
-    $projectA           = Project::factory()->create();
-    $projectB           = Project::factory()->create();
-    $taskA              = Task::factory()->for($projectA)->create(['order' => 1]);
-    $taskB              = Task::factory()->for($projectB)->create(['order' => 1]);
+    $projectA = Project::factory()->create();
+    $projectB = Project::factory()->create();
+    $taskA = Task::factory()->for($projectA)->create(['order' => 1]);
+    $taskB = Task::factory()->for($projectB)->create(['order' => 1]);
 
     app(TaskService::class)->reorderTasks([$taskA->id, $taskB->id], $projectA->id);
 })->throws(InvalidArgumentException::class);
 
 it('normalizes priorities after a task is deleted', function () {
-    $project            = Project::factory()->create();
-    $tasks              = Task::factory()
+    $project = Project::factory()->create();
+    $tasks = Task::factory()
         ->for($project)
         ->createMany([
-            ['order'    => 1],
-            ['order'    => 2],
-            ['order'    => 3],
+            ['order' => 1],
+            ['order' => 2],
+            ['order' => 3],
         ]);
 
     $tasks[1]->delete();
@@ -77,18 +77,18 @@ it('normalizes priorities after a task is deleted', function () {
 });
 
 it('moves a task to another project and appends it', function () {
-    $source             = Project::factory()->create();
-    $destination        = Project::factory()->create();
+    $source = Project::factory()->create();
+    $destination = Project::factory()->create();
 
-    $sourceTasks        = Task::factory()
+    $sourceTasks = Task::factory()
         ->for($source)
         ->createMany([
-            ['order'    => 1],
-            ['order'    => 2],
-            ['order'    => 3],
+            ['order' => 1],
+            ['order' => 2],
+            ['order' => 3],
         ]);
 
-    $destinationTask    = Task::factory()->for($destination)->create(['order' => 1]);
+    $destinationTask = Task::factory()->for($destination)->create(['order' => 1]);
 
     app(TaskService::class)->moveToProject($sourceTasks[1], $destination->id);
 
@@ -100,10 +100,10 @@ it('moves a task to another project and appends it', function () {
 });
 
 it('can move a task into an empty project', function () {
-    $source             = Project::factory()->create();
-    $destination        = Project::factory()->create();
+    $source = Project::factory()->create();
+    $destination = Project::factory()->create();
 
-    $task               = Task::factory()->for($source)->create(['order' => 1]);
+    $task = Task::factory()->for($source)->create(['order' => 1]);
 
     app(TaskService::class)->moveToProject($task, $destination->id);
 
@@ -111,8 +111,8 @@ it('can move a task into an empty project', function () {
 });
 
 it('can move an unassigned task into a project', function () {
-    $project            = Project::factory()->create();
-    $task               = Task::factory()->create(['project_id' => null, 'order' => 1]);
+    $project = Project::factory()->create();
+    $task = Task::factory()->create(['project_id' => null, 'order' => 1]);
 
     app(TaskService::class)->moveToProject($task, $project->id);
 

@@ -25,15 +25,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
-    use HasFactory, AddUUIDTrait;
+    use AddUUIDTrait, HasFactory;
 
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
-    protected $casts    = [
-        'order'         => 'integer',
+    protected $casts = [
+        'order' => 'integer',
     ];
 
     /** @return BelongsTo<Project, $this> */

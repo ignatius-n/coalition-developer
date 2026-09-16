@@ -4,7 +4,6 @@ use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 uses(RefreshDatabase::class);
 
@@ -14,7 +13,7 @@ it('renders the task manager', function () {
 });
 
 it('creates a task', function () {
-    $project    = Project::factory()->create();
+    $project = Project::factory()->create();
 
     Livewire::test('tasks.index')
         ->set('name', 'Build dashboard')
@@ -22,16 +21,16 @@ it('creates a task', function () {
         ->call('saveTask')
         ->assertSet('showForm', false);
 
-    $task       = Task::query()->first();
+    $task = Task::query()->first();
 
     expect($task)->name->toBe('Build dashboard')->project_id->toBe($project->id)->order->toBe(1);
 });
 
 it('appends a new task after existing tasks', function () {
-    $project    = Project::factory()->create();
+    $project = Project::factory()->create();
 
     Task::factory()->for($project)->create(['order' => 1]);
-        Task::factory()->for($project)->create(['order' => 2]);
+    Task::factory()->for($project)->create(['order' => 2]);
 
     Livewire::test('tasks.index')
         ->set('name', 'Third task')
@@ -47,8 +46,8 @@ it('appends a new task after existing tasks', function () {
 });
 
 it('updates a task', function () {
-    $project    = Project::factory()->create();
-    $task       = Task::factory()->for($project)->create(['name' => 'Old name', 'order' => 1]);
+    $project = Project::factory()->create();
+    $task = Task::factory()->for($project)->create(['name' => 'Old name', 'order' => 1]);
 
     Livewire::test('tasks.index')
         ->call('editTask', $task->id)
@@ -60,8 +59,8 @@ it('updates a task', function () {
 });
 
 it('deletes a task and normalizes remaining orders', function () {
-    $project    = Project::factory()->create();
-    $tasks      = Task::factory()
+    $project = Project::factory()->create();
+    $tasks = Task::factory()
         ->for($project)
         ->createMany([
             ['order' => 1],
@@ -77,8 +76,8 @@ it('deletes a task and normalizes remaining orders', function () {
 });
 
 it('reorders tasks through the component', function () {
-    $project    = Project::factory()->create();
-    $tasks      = Task::factory()
+    $project = Project::factory()->create();
+    $tasks = Task::factory()
         ->for($project)
         ->createMany([
             ['order' => 1],

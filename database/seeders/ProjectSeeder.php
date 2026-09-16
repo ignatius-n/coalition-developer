@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Project;
 use App\Models\Task;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Random\RandomException;
 
@@ -12,6 +11,7 @@ class ProjectSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
      * @throws RandomException
      */
     public function run(): void
