@@ -16,36 +16,60 @@ final class TaskService
      *
      * @param array<int, int> $taskIds
      */
-    public function reorderTasks(array $taskIds = [], ?int $projectId = null): void
+    public function reorderTasks(array $taskIds, ?int $projectId = null): void
     {
-        try {
-            $taskIds    = array_map('intval', $taskIds);
-            if ($taskIds === []) {
+        $taskIds        = array_map('intval', $taskIds);
+        if ($taskIds === []) {
+            return;
+        }
+
+        if (count($taskIds) !== count(array_unique($taskIds))) {
+            throw new InvalidArgumentException('Task IDs must be unique.');
+        }
+
+        DB::transaction(function () use ($taskIds, $projectId): void {
+            $query      = Task::query()->whereKey($taskIds)->lockForUpdate();
+
+            if ($projectId !== null) {
+                $query->where('project_id', $projectId);
+            }
+
+            $tasks      = $query->get();
+
+            if ($tasks->count() !== count($taskIds)) {
+                throw new InvalidArgumentException('The supplied tasks do not match the selected task scope.');
+            }
+
+            foreach ($taskIds as $index => $taskId) {
+                $tasks->firstWhere('id', $taskId)->update(['order' => $index + 1]);
+            }
+        });
+    }
+
+    public function normalize(?int $projectId): void
+    {
+        DB::transaction(function () use ($projectId): void {
+            $tasks              = Task::query()->where('project_id', $projectId)->orderBy('order')->orderBy('id')->lockForUpdate()->get();
+            foreach ($tasks as $index => $task) {
+                $task->update(['order' => $index + 1]);
+            }
+        });
+    }
+
+    public function moveToProject(Task $task, ?int $projectId): void
+    {
+        DB::transaction(function () use ($task, $projectId): void {
+            $oldProjectId = $task->project_id;
+            if ($oldProjectId === $projectId) {
                 return;
             }
-            if (count($taskIds) !== count(array_unique($taskIds))) {
-                throw new InvalidArgumentException('Task IDs must be unique.');
-            }
-            DB::transaction(static function () use ($taskIds, $projectId): void {
-                $query  = Task::query()->whereKey($taskIds)->lockForUpdate();
 
-                if ($projectId !== null) {
-                    $query->where('project_id', $projectId);
-                }
+            $task->update(['project_id' => $projectId]);
+            $this->normalize($oldProjectId);
 
-                $tasks  = $query->get();
+            $newOrder       = Task::query()->where('project_id', $projectId)->where('id', '!=', $task->id)->max('order') ?? 0;
 
-                if ($tasks->count() !== count($taskIds)) {
-                    throw new InvalidArgumentException('The supplied tasks do not match the selected task scope.');
-                }
-
-                foreach ($taskIds as $index => $taskId) {
-                    $tasks->firstWhere('id', $taskId)->update(['order' => $index + 1]);
-                }
-            });
-        }
-        catch (\Throwable $e) {
-            throw new InvalidArgumentException('Failed to reorder tasks: ' . $e->getMessage(), 0, $e);
-        }
+            $task->update(['order' => $newOrder + 1]);
+        });
     }
 }
