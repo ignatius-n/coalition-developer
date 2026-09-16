@@ -17,10 +17,10 @@ class ProjectSeeder extends Seeder
     public function run(): void
     {
         Project::factory()
-            ->count(5)
+            ->count(1)
             ->create()
             ->each(function ($project) {
-                $project->tasks()->saveMany(Task::factory()->count(random_int(3, 5))->make());
+                $project->tasks()->saveMany(Task::factory()->count(random_int(3, 10))->make());
             });
     }
 }
