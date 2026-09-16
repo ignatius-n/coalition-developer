@@ -19,7 +19,7 @@ class ProjectFactory extends Factory
     {
         return [
             'uuid'          => fake()->uuid(),
-            'name'          => fake()->sentence(3),
+            'name'          => fake()->sentence(2),
             'description'   => fake()->paragraph(),
         ];
     }
